@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang ="en">
+    <head>
+        <meta charset = "UTF-8">
+        <meta name = "viewport" content = "width=device-width, initial-scale=1.0">
+        <title>AI Math Tutor</title>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                text-align: center;
+                padding: 20px;
+                background-color : #f4f4f4;
+                transition: background 0.3s, color 0.3s;
+            }
+            .contanier {
+                background : white;
+                padding: 20px;
+                border-radius: 10px;
+                box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+                max-width: 400px;
+                margin: auto;
+
+            }
+            input {
+                padding: 10px;
+                width: 80%;
+                margin: 10px 0;
+                border: 1px solid #ccc;
+                border-radius: 5px;
+            }
+            button {
+                padding: 10px 15px;
+                cursor: pointer;
+                background-color: #007bff;
+                color: white;
+                border: none;
+                border-radius: 5px;
+                transition : background 0.3s;
+            }
+            button:hover {
+                background-color: #0056b3;
+            }
+            #result {
+                margin-top: 20px;
+                font-size: 20px;
+                font-weight: bold;
+            }
+            .loading {
+                font-size: 16 px;
+                color : #888;
+                display: none;
+            }
+            .dark-mode {
+                background-color : #222;
+                color : white;
+            }
+            .dark-mode container {
+                background : #333;
+            }
+            .history {
+                margin-top: 20px;
+                text-align:left;
+                font-size: 14px;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <h1> AI Math Tutor</h1>
+            <input type = "text" id="mathInput" placeholder="Enter a math problem..."/>
+            <button onelick="solveMath()">Solve</button>
+            <button oneclick="clearInput()">Clear</button>
+            <button oneclick="toggleDarkMode()">Toggle Dark Mode</button>
+            <button oneclick="startspeech()">Start Speech Recognition</button>
+            <div class="loading"> id= "loading">Solving...</div>
+            <div id="result"></div>
+            <div class="history" id="history"></div>
+        </div>
+
+        <scipt>
+            function solveMath() {
+                let problem = document.getElementById("mathInput").value;
+                let resultDiv = document.getElementByID("result");
+                let loadingDiv= document.get getElementByID("loading");
+                let historyDiv = document.getElementById("history");
+
+                resultDiv.innerText = "";
+                loadingDiv.style.display = "block";
+
+                fetch("http://127.0.0.1:5000/solve", {
+                    method: "POST",
+                    headers: {"Content-Type": "application/json" },
+                    body: JSON.stringify({problem: problem})
+                })
+                .then(respone => response.json())
+                .then(data => {
+                    loadingDiv.style.display = "none";
+                    resultDiv.innerText = "Answer: " + data.answer:
+                    historyDiv.innerHTML += `<p>${problem} = ${data.answer}</p>
+                })
+                .catch(error => {
+                    loadingDiv.style.display = "none";
+                    console.error("Error:", error);
+                    resultDiv.innnertext = "Error solving problem";
+                });
+            }
+            function clearInput() {
+                document.getElementById("mathInput").value = "";
+                document.getElementById("result").innerText = "";
+            }
+            
+            function toggleDarkMode() {
+                document.body.classList.toggle("dark-mode");
+            }
+
+            function startspeech() {
+                let recognition = new (window.speechrecognition || window.webkitSpeechRcognition)();
+                recognition.onresult = function(event) {
+                    documnet.getElementById("mathInpput").value = event.results[0][0].transcript;
+                };
+                recognition.start();
+            }
+        </scipt>
+
+    </body>
+</html>
